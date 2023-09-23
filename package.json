@@ -4,7 +4,9 @@
   "description": "## Your Task",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:tailwind": "tailwindcss -i ./public/css/base.css -o ./public/css/final.css --watch",
+    "generate:tailwind": "tailwindcss -o ./public/css/fina.css --minify"
   },
   "repository": {
     "type": "git",
@@ -19,12 +21,15 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "connect-session-sequelize": "^7.0.4",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
     "express-session": "^1.17.1",
     "handlebars": "^4.7.6",
     "mysql2": "^2.2.5",
-    "sequelize": "^6.3.5",
-    "dotenv": "^16.3.1"
+    "sequelize": "^6.3.5"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
   }
 }
