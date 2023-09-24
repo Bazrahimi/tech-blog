@@ -53,6 +53,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+
 // logout route
 router.post('/logout', (req, res) => {
   if (req.session.loggedIn) {
