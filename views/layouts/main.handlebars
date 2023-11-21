@@ -1,0 +1,44 @@
+{{!-- views/layouts/main.handlebars --}}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tech Blog</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- other head elements -->
+</head>
+<body>
+    <div class="bg-dark">
+    <header>
+      <!-- Use the navbar-dark and bg-dark classes for a dark navbar with white text -->
+      <!-- Also, use the container or container-fluid class to contain your navigation elements -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <!-- Use navbar-brand for the main title/link in your navbar -->
+          <a class="navbar-brand" href="/">Home</a>
+          <div class="collapse navbar-collapse">
+            <!-- Use ml-auto to push the navigation to the right -->
+            <div class="navbar-nav ml-auto">
+              {{#if loggedIn}}
+                <!-- Use nav-item and nav-link for proper spacing and alignment -->
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <button id="logout" class="btn btn-link nav-link text-white">Logout</button>
+              {{else}}
+                <a class="nav-link" href="/api/users/login">Login</a>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </nav>
+      <!-- For the blog title, use Bootstrap's text-light for light text color and my-4 for margin on the Y-axis -->
+      <h1 class="text-light my-4 text-center">The Tech Blog</h1>
+    </header>
+  </div>
+
+
+
+  <main>
+     {{{body}}}
+  </main>
+ <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

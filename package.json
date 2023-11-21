@@ -1,0 +1,38 @@
+{
+  "name": "tech-blog",
+  "version": "1.0.0",
+  "description": "## Your Task",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:tailwind": "tailwindcss -i ./public/css/base.css -o ./public/css/final.css --watch",
+    "generate:tailwind": "tailwindcss -o ./public/css/fina.css --minify",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bazrahimi/tech-blog.git"
+  },
+  "author": "Baz Rahimi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bazrahimi/tech-blog/issues"
+  },
+  "homepage": "https://github.com/Bazrahimi/tech-blog#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bootstrap": "^5.3.2",
+    "connect-session-sequelize": "^7.0.4",
+    "dotenv": "^16.3.1",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.5",
+    "express-session": "^1.17.1",
+    "handlebars": "^4.7.6",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "tailwindcss": "^2.2.7"
+  }
+}
