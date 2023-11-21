@@ -1,40 +1,22 @@
-{{!-- ./views/login.handlebars --}}
+<section class="login-page">
+    <div class="form-heading">
+        <h1>Log In</h1>
+    </div>
+    <div class="form-section">
+        <form class="login-form">
+            <div>
+                <label for="username-login">Username</label>
+                <input type="text" class="entry-field" id="username-login" />
+            </div>
+            <div>
+                <label for="password-login">Password</label>
+                <input type="password" class="entry-field" id="password-login" />
+            </div>
+            <div>
+                <button type="submit" class="login-signup-btn">Log In!</button>
+            </div>
+        </form>
+    </div>
 
-<div class="container">
-    <h2>Login</h2>
-    <form action="/api/users" method="post">
-        <div class="input-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-
-        <div class="input-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <button type="submit">Login</button>
-    </form>
-
-    <hr>
-
-    <h2>Sign Up</h2>
-    <form action="/api/users" method="post">
-        <div class="input-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-
-        <div class="input-group">
-            <label for="emailSignup">Email:</label>
-            <input type="email" id="emailSignup" name="email" required>
-        </div>
-
-        <div class="input-group">
-            <label for="passwordSignup">Password:</label>
-            <input type="password" id="passwordSignup" name="password" required>
-        </div>
-
-        <button type="submit">Sign Up</button>
-    </form>
-</div>
+    <a href="/signup" class="sign-in-link">sign up instead</a>
+</section>

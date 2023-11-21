@@ -44,9 +44,10 @@ router.post('/login', async (req, res) => {
 
     req.session.save(() => {
       req.session.loggedIn = true;
+      // Only send one response back - in this case, the JSON object.
       res.status(200).json({ user: dbUserData, message: 'You are now logged in!'});
-    })
-    res.render('login');
+    });
+
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -65,5 +66,16 @@ router.post('/logout', (req, res) => {
     res.status(404).end();
   }
 });
+
+router.get('/login', (req, res) => {
+  console.log(req.session); // Debugging line
+  if (req.session && req.session.loggedIn) {
+    res.redirect('/dashboard');
+  } else {
+    res.render('login');
+  }
+});
+
+
 
 module.exports = router;
