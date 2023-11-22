@@ -107,21 +107,35 @@ router.put('/:id', withAuth, (req, res) => {
 
 // delete a post
 router.delete('/:id', withAuth, (req, res) => {
-    Post.destroy({
-        where: { id: req.params.id }
-    })
-    .then(dbPostData => {
-        if (!dbPostData) {
-            res.status(404).json({ message: 'No post found with this id'})
-            return
+    const loggedInUserId = req.session.user_id; // Assuming this is set when the user logs in
+
+    // First, find the post to see if it exists and belongs to the user
+    Post.findOne({
+        where: {
+            id: req.params.id,
+            user_id: loggedInUserId // Check if the post belongs to the currently logged-in user
         }
-        res.redirect('/dashboard')
+    })
+    .then(post => {
+        if (!post) {
+            // If the post doesn't exist or doesn't belong to the user, return a 404 error
+            res.status(404).json({ message: 'No post found with this id or you do not have permission to delete this post' });
+            return;
+        }
+
+        // If the post does belong to the user, delete it
+        return post.destroy();
+    })
+    .then(() => {
+        // Redirect to dashboard after the post is deleted
+        res.redirect('/dashboard');
     })
     .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
+        console.log(err);
+        res.status(500).json(err);
+    });
 });
+
 
 
 module.exports = router;

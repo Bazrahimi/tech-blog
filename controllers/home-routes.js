@@ -2,33 +2,40 @@ const router = require('express').Router();
 const { User, Post, Comment } = require('../models');
 const withAuth = require('../utils/auth');
 
-// get all posts
 router.get('/', (req, res) => {
-    console.log('======================');
     Post.findAll({
         attributes: ['id', 'title', 'content', 'created_at'],
-        order: [['created_at', 'DESC']], 
+        order: [['created_at', 'DESC']],
         include: [
             {
-                model: Comment, 
+                model: Comment,
                 attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
                 include: {
-                    model: User, 
+                    model: User,
                     attributes: ['username']
                 }
             },
             {
-                model: User, 
+                model: User,
                 attributes: ['username']
             }
         ]
     })
-    .then(dbPostData => res.json(dbPostData))
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
+    .then(dbPostData => {
+        const posts = dbPostData.map(post => post.get({ plain: true }));
+        // Render the homepage handlebars template and pass the posts data to it
+        res.render('homepage', {
+            posts,
+            loggedIn: req.session.loggedIn || false // Pass the logged-in status to the template
+        });
     })
+    .catch(err => {
+        console.log(err);
+        res.status(500).send('Error occurred while fetching posts.');
+    });
 });
+
+
 
 // get one post
 router.get('/post/:id', (req, res) => {
