@@ -1,10 +1,8 @@
 const router = require('express').Router();
-const { User, Post, Comment } = require('../models');
-const withAuth = require('../utils/auth');
-
+const { Post, User, Comment } = require('../../models');
+const withAuth = require('../../utils/auth');
 // get all posts
 router.get('/', (req, res) => {
-    console.log('======================');
     Post.findAll({
         attributes: ['id', 'title', 'content', 'created_at'],
         order: [['created_at', 'DESC']], 
@@ -31,7 +29,7 @@ router.get('/', (req, res) => {
 });
 
 // get one post
-router.get('/post/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     Post.findOne({
         where: { id: req.params.id }, 
         attributes: ['id', 'title', 'content', 'created_at'],
@@ -63,25 +61,69 @@ router.get('/post/:id', (req, res) => {
     })
 });
 
-// In one of your route files, e.g., auth-routes.js or a similar file
+// create a post
+router.post('/', withAuth, (req, res) => {
+    Post.create({
+        title: req.body.title, 
+        content: req.body.content, 
+        user_id: req.session.user_id
+    })
+    .then(dbPostData => {
+        // redirect to dashboard route
+        res.redirect('/dashboard')
+    })
 
-router.get('/login', (req, res) => {
-    // If the user is already logged in, redirect them to the dashboard or home page
-    if (req.session.loggedIn) {
-      res.redirect('/'); // or res.redirect('/') for the home page
-    } else {
-      // Render the login view if the user is not logged in
-      res.render('login');
-    }
-  });
-  
-
-router.get('/signup', (req, res) => {
-    if (req.session.loggedIn) {
-        res.redirect('/')
-        return
-    }
-    res.render('signUp')
+    
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    })
+   
 });
 
+// update a post  
+router.put('/:id', withAuth, (req, res) => {
+    Post.update(
+        {
+            title: req.body.title, 
+            content: req.body.content
+        },
+        {
+            where: { id: req.params.id }
+        }
+    )
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({ message: 'No post found with this id'})
+            return
+        }
+        res.json(dbPostData)
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    })
+});
+
+// delete a post
+router.delete('/:id', withAuth, (req, res) => {
+    Post.destroy({
+        where: { id: req.params.id }
+    })
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({ message: 'No post found with this id'})
+            return
+        }
+        res.json(dbPostData)
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+    })
+});
+
+
 module.exports = router;
+
+

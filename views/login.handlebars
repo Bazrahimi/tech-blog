@@ -6,15 +6,18 @@
                     <h1>Log In</h1>
                 </div>
                 <div class="form-section">
-                    <form class="login-form">
+                    <form class="login-form" action="/api/users/login" method="post">
                         <div class="mb-3">
-                            <label for="username-login" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username-login" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="password-login" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password-login" required />
-                        </div>
+                                <label for="email-login" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email-login" name="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password-login" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password-login" name="password" required />
+                            </div>
+
+                     
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-block">Log In!</button>
                         </div>
