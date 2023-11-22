@@ -16,9 +16,10 @@
 </form>
 
 <!-- Display all posts -->
+<!-- Display all posts -->
 {{#if posts.length}}
   <h2>All Posts</h2>
-    <ul>
+  <ul>
     {{#each posts}}
       <li>
         <h3>{{this.title}}</h3>
@@ -28,18 +29,21 @@
           <strong style="font-size: 13px;">{{this.user.username}}</strong>
           <span style="font-size: 9px;">{{moment this.created_at }}</span>
         </p>
-          on
 
-          <p>
+        <div>
+  <!-- Edit Button:  -->
+  {{!-- <a href="/dashboard/edit/{{this.id}}" class="btn btn-primary">Edit</a> --}}
 
-          <!-- Using 'moment' with a specific format -->
-        </p>
+  
+  <!-- Delete Button: Form submission for DELETE request -->
+  <form action="/api/posts/{{this.id}}?_method=DELETE" method="POST">
+    <button type="submit" class="btn btn-danger">X</button>
+  </form>
+</div>
 
       </li>
     {{/each}}
   </ul>
-
-
 {{else}}
   <p>You don't have any posts yet. Create one!</p>
 {{/if}}

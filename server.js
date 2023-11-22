@@ -44,6 +44,10 @@ const hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
+
+
 
 
 app.use(express.json());

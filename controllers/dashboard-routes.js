@@ -32,56 +32,48 @@ router.get('/', withAuth, (req, res) => {
         });
 });
 
-// edit a post
-router.put('/:id', withAuth, (req, res) => {
-    Post.update(
-        {
-            title: req.body.title, 
-            content: req.body.content
-        }, 
-        {
-            where: { id: req.params.id }
-        }
-    )
-    .then(dbPostData => {
-        if (!dbPostData) {
-            res.status(404).json({ message: 'No post found with this id'})
-            return
-        }
-        res.redirect('/dashboard'); // Redirect to the dashboard route
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
+router.put('/edit/:id', withAuth, (req, res) => {
+  Post.update(
+    {
+      title: req.body.title,
+      content: req.body.content
+    },
+    {
+      where: { id: req.params.id }
+    }
+  )
+  .then(dbPostData => {
+    if (!dbPostData) {
+      res.status(404).json({ message: 'No post found with this id' });
+      return;
+    }
+    res.json({ message: 'Post updated' });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json(err);
+  });
 });
 
-module.exports = router;
-// END: be15d9bcejpp
 
-// edit a post
-router.put('/:id', withAuth, (req, res) => {
-    Post.update(
-        {
-            title: req.body.title, 
-            content: req.body.content
-        }, 
-        {
-            where: { id: req.params.id }
-        }
-    )
+  
+  // Delete a post (DELETE request)
+  router.delete('/delete/:id', withAuth, (req, res) => {
+    Post.destroy({
+      where: { id: req.params.id }
+    })
     .then(dbPostData => {
-        if (!dbPostData) {
-            res.status(404).json({ message: 'No post found with this id'})
-            return
-        }
-        res.json(dbPostData)
+      if (!dbPostData) {
+        res.status(404).json({ message: 'No post found with this id' });
+        return;
+      }
+      res.json({ message: 'Post deleted' });
     })
     .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
-});
+      console.log(err);
+      res.status(500).json(err);
+    });
+  });
 
 module.exports = router;
 
