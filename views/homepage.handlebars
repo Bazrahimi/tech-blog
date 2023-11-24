@@ -1,20 +1,62 @@
-{{#if posts.length}}
-  <h2>All Posts</h2>
-  <ul>
-    {{#each posts}}
-      <li>
-        <h3>{{this.title}}</h3>
-        <p>{{this.content}}</p>
-        <p>
-          <span style="font-size: 10px;">Posted By </span>
-          <strong style="font-size: 13px;">{{this.user.username}}</strong>
-          <span style="font-size: 9px;">{{moment this.created_at }}</span>
-        </p>
+{{!-- Iterate through each post --}}
+{{#each posts}}
+  <article class="mb-5 p-3 border rounded">
+    <h2>{{this.title}}</h2>
+    <p class="mb-0">{{this.content}}</p>
+    <p class="text-muted small text-right mb-3">Posted By {{this.user.username}} {{moment this.created_at}}</p>
+
+    {{!-- Display comments for this post --}}
+    <div class="comments mb-3">
+      {{#each this.comments}}
+        <div class="comment bg-light p-2 mb-2 rounded">
+          <p class="mb-1 small">{{this.comment_text}}</p>
+          <p class="text-muted extra-small text-right mb-0">Posted By {{this.user.username}} {{moment this.created_at}}</p>
+        </div>
+      {{/each}}
+    </div>
+    
+    {{!-- Include a form for adding a comment --}}
+    <form class="comment-form">
+      <div class="form-group mb-2">
+        <textarea class="form-control" name="comment_text" placeholder="Add a comment..." required></textarea>
+      </div>
+      <input type="hidden" name="post_id" value="{{this.id}}" />
+      <button type="submit" class="btn btn-primary btn-sm">Send</button>
+    </form>
+  </article>
+{{/each}}
 
 
-      </li>
-    {{/each}}
-  </ul>
-{{else}}
-  <p>You don't have any posts yet. Create one!</p>
-{{/if}}
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.comment-form').forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+
+        const postData = {
+          comment_text: event.target.comment_text.value,
+          post_id: event.target.post_id.value
+        };
+
+        fetch('/api/comments', {
+          method: 'POST',
+          body: JSON.stringify(postData),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Comment added:', data);
+          // Reload the page to show the new comment
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      });
+    });
+  });
+</script>

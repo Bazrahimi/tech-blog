@@ -1,11 +1,13 @@
 const router = require('express').Router();
 const { Post, User, Comment } = require('../../models');
 const withAuth = require('../../utils/auth');
-// get all posts
+
+// Get all posts for the dashboard or a public page
 router.get('/', (req, res) => {
+    // If this route is for the dashboard, you should also include 'withAuth' middleware
     Post.findAll({
         attributes: ['id', 'title', 'content', 'created_at'],
-        order: [['created_at', 'DESC']], 
+        order: [['created_at', 'asc']], 
         include: [
             {
                 model: Comment, 
@@ -23,12 +25,12 @@ router.get('/', (req, res) => {
     })
     .then(dbPostData => res.json(dbPostData))
     .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
+        console.log(err);
+        res.status(500).json(err);
+    });
 });
 
-// get one post
+// Get one post
 router.get('/:id', (req, res) => {
     Post.findOne({
         where: { id: req.params.id }, 
@@ -50,85 +52,10 @@ router.get('/:id', (req, res) => {
     })
     .then(dbPostData => {
         if (!dbPostData) {
-            res.status(404).json({ message: 'No post found with this id'})
-            return
-        }
-        res.json(dbPostData)
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
-});
-
-// create a post
-router.post('/', withAuth, (req, res) => {
-    Post.create({
-        title: req.body.title, 
-        content: req.body.content, 
-        user_id: req.session.user_id
-    })
-    .then(dbPostData => {
-        // redirect to dashboard route
-        res.redirect('/dashboard')
-    })
-
-    
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
-   
-});
-
-// update a post  
-router.put('/:id', withAuth, (req, res) => {
-    Post.update(
-        {
-            title: req.body.title, 
-            content: req.body.content
-        },
-        {
-            where: { id: req.params.id }
-        }
-    )
-    .then(dbPostData => {
-        if (!dbPostData) {
-            res.status(404).json({ message: 'No post found with this id'})
-            return
-        }
-        res.json(dbPostData)
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
-    })
-});
-
-// delete a post
-router.delete('/:id', withAuth, (req, res) => {
-    const loggedInUserId = req.session.user_id; // Assuming this is set when the user logs in
-
-    // First, find the post to see if it exists and belongs to the user
-    Post.findOne({
-        where: {
-            id: req.params.id,
-            user_id: loggedInUserId // Check if the post belongs to the currently logged-in user
-        }
-    })
-    .then(post => {
-        if (!post) {
-            // If the post doesn't exist or doesn't belong to the user, return a 404 error
-            res.status(404).json({ message: 'No post found with this id or you do not have permission to delete this post' });
+            res.status(404).json({ message: 'No post found with this id' });
             return;
         }
-
-        // If the post does belong to the user, delete it
-        return post.destroy();
-    })
-    .then(() => {
-        // Redirect to dashboard after the post is deleted
-        res.redirect('/dashboard');
+        res.json(dbPostData);
     })
     .catch(err => {
         console.log(err);
@@ -136,8 +63,72 @@ router.delete('/:id', withAuth, (req, res) => {
     });
 });
 
+// Create a post
+router.post('/', withAuth, (req, res) => {
+    Post.create({
+        title: req.body.title, 
+        content: req.body.content, 
+        user_id: req.session.user_id // Assumes user_id is stored in session
+    })
+    .then(dbPostData => res.redirect('/dashboard'))
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
 
+// Update a post
+router.put('/:id', withAuth, (req, res) => {
+    Post.update(req.body, {
+        where: {
+            id: req.params.id,
+            user_id: req.session.user_id // Check if the logged-in user is the owner of the post
+        }
+    })
+    .then(dbPostData => {
+        if (!dbPostData || dbPostData[0] === 0) {
+            res.status(404).json({ message: 'No post found with this id or you are not authorized to edit this post' });
+            return;
+        }
+        res.json({ message: 'Post updated' });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+// Delete a post
+router.delete('/:id', withAuth, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const userId = req.session.user_id;
+
+        // Delete the comments associated with the post
+        await Comment.destroy({
+            where: {
+                post_id: postId
+            }
+        });
+
+        // Delete the post
+        const deletedPost = await Post.destroy({
+            where: {
+                id: postId,
+                user_id: userId
+            }
+        });
+
+        if (!deletedPost) {
+            res.status(404).json({ message: 'No post found with this id or you are not authorized to delete this post' });
+            return;
+        }
+
+        res.json({ message: 'Post and comments deleted' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+});
 
 module.exports = router;
-
-

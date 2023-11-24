@@ -12,6 +12,7 @@ router.get('/', (req, res) => {
             'content',
             'created_at'
         ],
+        order: [['created_at', 'ASC']],
         include: [
             {
                 model: Comment,

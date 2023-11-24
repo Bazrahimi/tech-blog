@@ -1,49 +1,79 @@
 <!-- views/dashboard.handlebars -->
-<h2>Create a New Post</h2>
-
-<form class="new-post-form" action="/api/posts" method="POST">
-    <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="post-title" name="title" required>
+<div class="container mt-4">
+  <!-- Section to create a new post -->
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Create a New Post</h2>
+      <form class="new-post-form" action="/api/posts" method="POST">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="post-title" name="title" required>
+        </div>
+        <div class="mb-3">
+          <label for="content" class="form-label">Content</label>
+          <textarea class="form-control" id="post-content" name="content" rows="10" required></textarea>
+        </div>
+        <div class="mb-3 text-end">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
     </div>
-    <div class="mb-3">
-        <label for="content" class="form-label">Content</label>
-        <textarea class="form-control" id="post-content" name="content" rows="10" required></textarea>
+  </div>
+
+  <!-- Display all posts -->
+  {{#if posts.length}}
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-4">Your Posts</h2>
+        <ul class="list-unstyled">
+          {{#each posts}}
+            <li class="mb-3 p-3 border rounded">
+              <h3>{{this.title}}</h3>
+              <p>{{this.content}}</p>
+              <p class="text-muted">
+                <small>Posted By {{this.user.username}} {{moment this.created_at}}</small>
+              </p>
+
+              <div class="text-end">
+                
+                <!-- Delete Button: JavaScript event listener for DELETE request -->
+                <button class="delete-post-btn btn btn-danger btn-sm" data-id="{{this.id}}">Delete</button>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
     </div>
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Create</button>
-    </div>
-</form>
-
-<!-- Display all posts -->
-<!-- Display all posts -->
-{{#if posts.length}}
-  <h2>All Posts</h2>
-  <ul>
-    {{#each posts}}
-      <li>
-        <h3>{{this.title}}</h3>
-        <p>{{this.content}}</p>
-        <p>
-          <span style="font-size: 10px;">Posted By </span>
-          <strong style="font-size: 13px;">{{this.user.username}}</strong>
-          <span style="font-size: 9px;">{{moment this.created_at }}</span>
-        </p>
-
-        <div>
-  <!-- Edit Button:  -->
-  {{!-- <a href="/dashboard/edit/{{this.id}}" class="btn btn-primary">Edit</a> --}}
-
-  
-  <!-- Delete Button: Form submission for DELETE request -->
-  <form action="/api/posts/{{this.id}}?_method=DELETE" method="POST">
-    <button type="submit" class="btn btn-danger">X</button>
-  </form>
+  {{else}}
+    <p>You don't have any posts yet. Create one!</p>
+  {{/if}}
 </div>
 
-      </li>
-    {{/each}}
-  </ul>
-{{else}}
-  <p>You don't have any posts yet. Create one!</p>
-{{/if}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const deleteButtons = document.querySelectorAll('.delete-post-btn');
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const postId = event.target.getAttribute('data-id');
+      fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Post deleted');
+          // Optionally remove the post element from the DOM or refresh the page
+          location.reload(); // This will refresh the page to reflect the changes
+        } else {
+          throw new Error('Post could not be deleted');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  });
+});
+</script>
