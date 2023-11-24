@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');  // import the sequelize constructor and DataTypes object from the Sequelize library
-const sequelize = require('../config/connection');  
+const sequelize = require('../../config/connection');  
 class Comment extends Model {}  
 
 Comment.init({
