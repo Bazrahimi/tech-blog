@@ -1,20 +1,20 @@
-{{!-- views/homepage.handlebars --}}
-<h1>Welcome to the Tech Blog!</h1>
-<!-- additional content -->
-
-<!-- Inside homepage.handlebars -->
-{{!-- Inside homepage.handlebars --}}
-{{#if posts}}
-  <div class="posts-list">
+{{#if posts.length}}
+  <h2>All Posts</h2>
+  <ul>
     {{#each posts}}
-      <div class="post">
-        <h2>{{title}}</h2>
-        <div>{{content}}</div>
-        <p>Posted by {{user.username}} on {{formatDate created_at}}</p>
-        {{!-- Add additional post details here --}}
-      </div>
+      <li>
+        <h3>{{this.title}}</h3>
+        <p>{{this.content}}</p>
+        <p>
+          <span style="font-size: 10px;">Posted By </span>
+          <strong style="font-size: 13px;">{{this.user.username}}</strong>
+          <span style="font-size: 9px;">{{moment this.created_at }}</span>
+        </p>
+
+
+      </li>
     {{/each}}
-  </div>
+  </ul>
 {{else}}
-  <p>No posts to display.</p>
+  <p>You don't have any posts yet. Create one!</p>
 {{/if}}

@@ -1,15 +1,22 @@
 const router = require('express').Router();
-const { User, Post, Comment } = require('../models');
+const { Post, User, Comment } = require('../models');
 const withAuth = require('../utils/auth');
+
+
 
 router.get('/', (req, res) => {
     Post.findAll({
-        attributes: ['id', 'title', 'content', 'created_at'],
-        order: [['created_at', 'DESC']],
+        attributes: [
+            'id',
+            'title',
+            'content',
+            'created_at'
+        ],
         include: [
             {
                 model: Comment,
                 attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+
                 include: {
                     model: User,
                     attributes: ['username']
@@ -19,23 +26,22 @@ router.get('/', (req, res) => {
                 model: User,
                 attributes: ['username']
             }
+
         ]
     })
     .then(dbPostData => {
+
+        // Serialize the data
         const posts = dbPostData.map(post => post.get({ plain: true }));
-        // Render the homepage handlebars template and pass the posts data to it
-        res.render('homepage', {
-            posts,
-            loggedIn: req.session.loggedIn || false // Pass the logged-in status to the template
-        });
+
+        // Render the page with the serialized data
+        res.render('homepage', { posts, loggedIn: req.session.loggedIn }); // Use posts, not dbPostData
     })
     .catch(err => {
         console.log(err);
-        res.status(500).send('Error occurred while fetching posts.');
+        res.status(500).json(err);
     });
 });
-
-
 
 // get one post
 router.get('/post/:id', (req, res) => {
@@ -75,7 +81,7 @@ router.get('/post/:id', (req, res) => {
 router.get('/login', (req, res) => {
     // If the user is already logged in, redirect them to the dashboard or home page
     if (req.session.loggedIn) {
-      res.redirect('/'); // or res.redirect('/') for the home page
+      res.redirect('/dashboard'); // or res.redirect('/') for the home page
     } else {
       // Render the login view if the user is not logged in
       res.render('login');
@@ -90,5 +96,12 @@ router.get('/signup', (req, res) => {
     }
     res.render('signUp')
 });
+
+module.exports = router;
+
+
+
+
+
 
 module.exports = router;

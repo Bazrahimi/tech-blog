@@ -11,6 +11,7 @@ const exphbs = require('express-handlebars');
 
 
 const routes = require('./controllers');
+
 const sequelize = require('./config/connection');
 
 const session = require('express-session');
@@ -54,6 +55,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session(sess));
+app.use(routes);
 
 app.get('/', (req, res) => {
 
