@@ -1,6 +1,6 @@
-const User = require('./User.js');
-const Post = require('./Post.js');
-const Comment = require('./Comment.js');
+const User = require('./User/index.js');
+const Post = require('./Post/index.js');
+const Comment = require('./Comment/index.js');
 // create associations
 User.hasMany(Post, {
   foreignKey: 'user_id'
