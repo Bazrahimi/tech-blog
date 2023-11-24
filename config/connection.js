@@ -1,17 +1,32 @@
 const Sequelize = require('sequelize');
-// import the 'dotevn. package to read and set inviroment variables 
 require('dotenv').config();
 
-// create instance of Sequelize
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: 'localhost',
-    dialect: 'mysql',
-    port: 3306,
-  }
-);
+let sequelize;
+
+if (process.env.DATABASE_URL) {
+  // Heroku deployment
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // This helps to connect to the Heroku Postgres database
+      }
+    }
+  });
+} else {
+  // Local development
+  sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+      host: 'localhost',
+      dialect: 'mysql',
+      port: 3306,
+    }
+  );
+}
 
 module.exports = sequelize;
